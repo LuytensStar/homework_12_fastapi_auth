@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "hmw-12-api-auth"
+version = "0.1.0"
+description = ""
+authors = ["LuytensStar <artem05zhar@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.111.0"
+uvicorn = {extras = ["standard"], version = "^0.29.0"}
+alembic = "^1.13.1"
+psycopg2 = "^2.9.9"
+sqlalchemy = "^2.0.30"
+libgravatar = "^1.0.4"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
