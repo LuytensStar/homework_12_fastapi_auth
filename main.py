@@ -27,10 +27,23 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
+    """
+        Initializes the application on startup.
+
+        This function is called when the application starts and initializes the rate limiter.
+    """
     r = await redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0, encoding="utf-8",
                           decode_responses=True)
     await FastAPILimiter.init(r)
 
 @app.get('/')
 def read_root():
+    """
+        The root endpoint.
+
+        This function handles the GET request at the root of the application.
+
+        :return: A welcome message.
+        :rtype: dict
+    """
     return {'message':'helloworld'}

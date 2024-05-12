@@ -7,12 +7,50 @@ from src.schemas import ContactModel,ContactResponse
 
 from datetime import datetime, timedelta
 async def get_contacts(skip:int,limit:int, user:User, db:Session)->List[ContactResponse]:
+    """
+        Retrieves a list of contacts for a specific user with specified pagination parameters.
+
+        :param skip: The number of contacts to skip.
+        :type skip: int
+        :param limit: The maximum number of contacts to return.
+        :type limit: int
+        :param user: The user to retrieve contacts for.
+        :type user: User
+        :param db: The database session.
+        :type db: Session
+        :return: A list of contacts.
+        :rtype: List[ContactResponse]
+    """
     return db.query(Contact).filter(Contact.user_id==user.id).offset(skip).limit(limit).all()
 
 async def get_contact(contact_id:int, user:User, db:Session)->ContactResponse:
+    """
+       Retrieves a specific contact for a specific user.
+
+       :param contact_id: The ID of the contact to retrieve.
+       :type contact_id: int
+       :param user: The user to retrieve the contact for.
+       :type user: User
+       :param db: The database session.
+       :type db: Session
+       :return: The requested contact.
+       :rtype: ContactResponse
+    """
     return db.query(Contact).filter(and_(Contact.id==contact_id, Contact.user_id==user.id)).first()
 
 async def create_contact(body:ContactModel, user:User, db:Session)->Contact:
+    """
+        Creates a new contact for a specific user.
+
+        :param body: The contact data to create.
+        :type body: ContactModel
+        :param user: The user to create the contact for.
+        :type user: User
+        :param db: The database session.
+        :type db: Session
+        :return: The created contact.
+        :rtype: Contact
+    """
     contact = Contact(name=body.name,surname=body.surname,electronic_mail=body.electronic_mail,
                       phone_number=body.phone_number,birth_date=body.birth_date,
                       additional_info=body.additional_info, user=user)
@@ -22,6 +60,20 @@ async def create_contact(body:ContactModel, user:User, db:Session)->Contact:
     return contact
 
 async def update_contact(contact_id:int, body:Contact, user:User, db:Session):
+    """
+       Updates a specific contact for a specific user.
+
+       :param contact_id: The ID of the contact to update.
+       :type contact_id: int
+       :param body: The contact data to update.
+       :type body: Contact
+       :param user: The user to update the contact for.
+       :type user: User
+       :param db: The database session.
+       :type db: Session
+       :return: The updated contact.
+       :rtype: Contact
+    """
     contact = db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id==user.id)).first()
     if contact:
         contact.name = body.name
@@ -35,6 +87,18 @@ async def update_contact(contact_id:int, body:Contact, user:User, db:Session):
     return contact
 
 async def delete_contact(contact_id:int, user:User, db:Session):
+    """
+       Deletes a specific contact for a specific user.
+
+       :param contact_id: The ID of the contact to delete.
+       :type contact_id: int
+       :param user: The user to delete the contact for.
+       :type user: User
+       :param db: The database session.
+       :type db: Session
+       :return: The deleted contact.
+       :rtype: Contact
+    """
     contact = db.query(Contact).filter(and_(Contact.id==contact_id, Contact.user_id==user.id)).first()
     if contact:
         db.delete(contact)
@@ -44,6 +108,18 @@ async def delete_contact(contact_id:int, user:User, db:Session):
     return contact
 
 async def search_contacts(query: str, user:User, db: Session)->List[ContactResponse] | None:
+    """
+        Searches for contacts for a specific user based on a query string.
+
+        :param query: The query string to search for.
+        :type query: str
+        :param user: The user to search contacts for.
+        :type user: User
+        :param db: The database session.
+        :type db: Session
+        :return: A list of contacts that match the query string.
+        :rtype: List[ContactResponse] | None
+    """
     contacts = db.query(Contact).filter(
         and_(or_(
             Contact.name.ilike(f'%{query}%'),
@@ -54,6 +130,14 @@ async def search_contacts(query: str, user:User, db: Session)->List[ContactRespo
     return contacts
 
 async def get_birthdays(db:Session)->List[ContactResponse]:
+    """
+       Retrieves a list of contacts who have birthdays within the next week.
+
+       :param db: The database session.
+       :type db: Session
+       :return: A list of contacts with upcoming birthdays.
+       :rtype: List[ContactResponse]
+    """
     now_time = datetime.now().date()
     future_time = now_time + timedelta(days=7)
 
